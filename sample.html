@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tic Tac Game</title>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr );
+     
+      grid-gap: 10px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgb(235, 65, 65);
+      cursor: pointer;
+    }
+
+    .cell:hover {
+      background-color: rgb(205, 212, 108);
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+
+    .restart-button {
+      margin-top: 20px;
+      font-size: 16px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tic Tac Toe</h1>
+    <div class="grid">
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+    </div>
+    <div class="message"></div>
+    <button class="restart-button">Restart</button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cells = Array.from(document.querySelectorAll('.cell'));
+      const message = document.querySelector('.message');
+      const restartButton = document.querySelector('.restart-button');
+
+      let currentPlayer = 'X';
+      let gameState = ['', '', '', '', '', '', '', '', ''];
+      let gameEnded = false;
+
+      const winningCombinations = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+      ];
+
+      const checkGameEnd = () => {
+        let draw = true;
+        for (let i = 0; i < gameState.length; i++) {
+          if (gameState[i] === '') {
+            draw = false;
+            break;
+          }
+        }
+
+        if (draw) {
+          message.textContent = "The game ended in a draw!";
+          gameEnded = true;
+          return true;
+        }
+
+        for (let combination of winningCombinations) {
+          const [a, b, c] = combination;
+          if (gameState[a] !== '' && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+            message.textContent = `Player ${gameState[a]} wins!`;
+            gameEnded = true;
+            return true;
+          }
+        }
+
+        return false;
+      };
+
+      const restartGame = () => {
+        currentPlayer = 'X';
+        gameState = ['', '', '', '', '', '', '', '', ''];
+        gameEnded = false;
+        message.textContent = '';
+        cells.forEach(cell => {
+          cell.textContent = '';
+          cell.classList.remove('disabled');
+        });
+      };
+
+      const handleCellClick = (index) => {
+        if (gameState[index] === '' && !gameEnded) {
+          gameState[index] = currentPlayer;
+          cells[index].textContent = currentPlayer;
+          cells[index].classList.add('disabled');
+
+          if (!checkGameEnd()) {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            message.textContent = `Player ${currentPlayer}'s turn`;
+          }
+        }
+      };
+
+      cells.forEach((cell, index) => {
+        cell.addEventListener('click', () => handleCellClick(index));
+      });
+
+      restartButton.addEventListener('click', restartGame);
+    });
+  </script>
+</body>
+</html>
